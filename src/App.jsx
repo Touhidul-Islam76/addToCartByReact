@@ -11,6 +11,7 @@ import { ImExit } from "react-icons/im";
 import { FaBars,FaSearch,FaShoppingCart,FaPlusSquare  } from "react-icons/fa";
 import { FaBowlFood ,  } from "react-icons/fa6";
 import Notification from '../src/Notification';
+import { motion } from "framer-motion";
 function App() {
   const [open, setOpen] = useState(false);
   const [cart, setCart] = useState([]);
@@ -61,7 +62,7 @@ function App() {
     setCart([]);
     setOpen(false);
   };
-
+  
   return (
     <div>
       {/* Header */}
@@ -131,42 +132,50 @@ function App() {
       )}
 
       {/* Cart sidebar */}
-      {open && (
-        <div className="sidebar transform transition-all duration-[5s] ease-in-out bg-[var(--decent-color)] fixed h-[100vh] w-full md:w-[40%] top-0 right-0 z-[100] p-[1vw]" id="sidebar">
-          <div onClick={() => setOpen(!open)} className="sidebar-close bg-[var(--accent-color)] text-[var(--secondary-color)] rounded-[50%] cursor-pointer font-[600] text-[8vw] md:text-[2.5vw] p-[1.5vw] md:p-[1vw] absolute top-[1vw] right-[1vw] hover:text-green-400">
-            <ImExit />
+
+      
+      <motion.div 
+  initial={{ x: "100%", opacity: 0 }}
+  animate={{ x: open ? "0%" : "100%", opacity: open ? 1 : 0 }}
+  transition={{ duration: 0.4, ease: "easeInOut" }}
+  className="sidebar fixed top-0 right-0 h-[100vh] w-full md:w-[40%] z-[100] p-[1vw] 
+    bg-[var(--decent-color)]"
+>
+  <div onClick={() => setOpen(!open)} className="sidebar-close bg-[var(--accent-color)] text-[var(--secondary-color)] rounded-[50%] cursor-pointer font-[600] text-[8vw] md:text-[2.5vw] p-[1.5vw] md:p-[1vw] absolute top-[1vw] right-[1vw] hover:text-green-400">
+    <ImExit />
+  </div>
+  <div className="cart-menu overflow-y-auto h-[80vh]">
+    <h1 className='font-[600] text-[5vw] md:text-[2.8vw] text-[var(--secondary-color)]'>My cart</h1>
+    {cart.length === 0 ? (
+      <div className="cart-temps flex flex-col gap-[1.4vw] justify-between border-solid border-2 border-[var(--primary-color)] rounded-[0.5vw] p-[1vw] mt-[2vw] text-[var(--text-color)]">
+        Your cart is empty
+      </div>
+    ) : (
+      cart.map((item, index) => (
+        <div key={index} className="cart-item flex justify-between items-center border-solid border-2 border-[var(--primary-color)] rounded-[0.5vw] p-[1vw] mt-[2vw] text-[var(--text-color)]">
+          <div>
+            <img src={item.image} alt={item.name} className="w-[20vw] h-[20vw] md:w-[2.5vw] md:h-[2.5vw] rounded-[0.5vw]" />
+            <h5>{item.name}</h5>
+            <p>${item.price} x {item.quantity}</p>
           </div>
-          <div className="cart-menu overflow-y-auto h-[80vh]">
-            <h1 className='font-[600] text-[5vw] md:text-[2.8vw] text-[var(--secondary-color)]'>My cart</h1>
-            {cart.length === 0 ? (
-              <div className="cart-temps flex flex-col gap-[1.4vw] justify-between border-solid border-2 border-[var(--primary-color)] rounded-[0.5vw] p-[1vw] mt-[2vw] text-[var(--text-color)]">
-                Your cart is empty
-              </div>
-            ) : (
-              cart.map((item, index) => (
-                <div key={index} className="cart-item flex justify-between items-center border-solid border-2 border-[var(--primary-color)] rounded-[0.5vw] p-[1vw] mt-[2vw] text-[var(--text-color)]">
-                  <div>
-                    <img src={item.image} alt={item.name} className="w-[20vw] h-[20vw] md:w-[2.5vw] md:h-[2.5vw] rounded-[0.5vw]" />
-                    <h5>{item.name}</h5>
-                    <p>${item.price} x {item.quantity}</p>
-                  </div>
-                  <div className="flex gap-[1vw]">
-                    <button onClick={() => removeFromCart(item)} className="bg-red-500 text-white p-[2.8vw] md:p-[0.5vw] rounded-[0.5vw]">-</button>
-                    <button onClick={() => addToCart(item)} className="bg-green-500 text-white p-[2.8vw] md:p-[0.5vw] rounded-[0.5vw]">+</button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-          <div className="sidebar-footer absolute bottom-[2.5vw] w-[95%]">
-            <div className="total-amount flex justify-between items-center gap-[1.25vw]">
-              <h5>Total</h5>
-              <div className="cart-total">${total.toFixed(2)}</div>
-            </div>
-            <button onClick={handleCheckout} className="checkout-btn w-[100%] p-[0.4vw] bg-[var(--secondary-color)] text-[var(--accent-color)] rounded-[0.52vw] mt-[1.5vw] cursor-pointer">Checkout</button>
+          <div className="flex gap-[1vw]">
+            <button onClick={() => removeFromCart(item)} className="bg-red-500 text-white p-[2.8vw] md:p-[0.5vw] rounded-[0.5vw]">-</button>
+            <button onClick={() => addToCart(item)} className="bg-green-500 text-white p-[2.8vw] md:p-[0.5vw] rounded-[0.5vw]">+</button>
           </div>
         </div>
-      )}
+      ))
+    )}
+  </div>
+  <div className="sidebar-footer absolute bottom-[2.5vw] w-[95%]">
+    <div className="total-amount flex justify-between items-center gap-[1.25vw]">
+      <h5>Total</h5>
+      <div className="cart-total">${total.toFixed(2)}</div>
+    </div>
+    <button onClick={handleCheckout} className="checkout-btn w-[100%] p-[0.4vw] bg-[var(--secondary-color)] text-[var(--accent-color)] rounded-[0.52vw] mt-[1.5vw] cursor-pointer">Checkout</button>
+  </div>
+</motion.div>
+
+      
     </div>
   );
 }
